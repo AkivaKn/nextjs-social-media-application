@@ -90,14 +90,52 @@ async function seedComments(client) {
     throw error;
   }
 }
+
+async function seedPostLikes(client) {
+  try {
+    const createTable = await client.sql`CREATE TABLE post_likes (
+              like_id SERIAL PRIMARY KEY,
+              user_id INT REFERENCES users(user_id) ON DELETE CASCADE NOT NULL,
+              post_id INT REFERENCES posts(post_id) ON DELETE CASCADE NOT NULL
+          );`;
+    console.log("Created post_likes table");
+    return {
+      createTable,
+    };
+  } catch (error) {
+    console.error("Error seeding post_likes:", error);
+    throw error;
+  }
+}
+async function seedCommentLikes(client) {
+  try {
+    const createTable = await client.sql`CREATE TABLE comment_likes (
+              like_id SERIAL PRIMARY KEY,
+              user_id INT REFERENCES users(user_id) ON DELETE CASCADE NOT NULL,
+              comment_id INT REFERENCES posts(post_id) ON DELETE CASCADE NOT NULL
+          );`;
+    console.log("Created comment_likes table");
+    return {
+      createTable,
+    };
+  } catch (error) {
+    console.error("Error seeding comment_likes:", error);
+    throw error;
+  }
+}
 async function main() {
   const client = await db.connect();
+  await client.sql`DROP TABLE IF EXISTS post_likes;`;
+  await client.sql`DROP TABLE IF EXISTS comment_likes;`;
   await client.sql`DROP TABLE IF EXISTS comments;`;
   await client.sql`DROP TABLE IF EXISTS posts;`;
   await client.sql`DROP TABLE IF EXISTS users;`;
   await seedUsers(client);
   await seedPosts(client);
   await seedComments(client);
+  await seedPostLikes(client);
+  await seedCommentLikes(client);
+
   await client.end();
 }
 

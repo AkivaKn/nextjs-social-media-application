@@ -28,14 +28,12 @@ export const authOptions = {
         if (user) {
           token.user = user;
         }
-        console.log("JWT Callback - Token:", token);
         return token;
       },
       async session({ session, token }) {
         if (token.user) {
           session.user = token.user;
         }
-        console.log("Session Callback - Session:", session);
         return session;
       },
     },
